@@ -1,3 +1,5 @@
+![Folsom OpenRiak Status](https://github.com/OpenRiak/folsom/actions/workflows/erlang.yml/badge.svg?branch=openriak-3.4)
+
 ### folsom
 
 Folsom is an Erlang based metrics system inspired by Coda Hale's metrics (https://github.com/dropwizard/metrics). The metrics API's purpose is to collect realtime metrics from your Erlang applications and publish them via Erlang APIs and output plugins. folsom is *not* a persistent store. There are 6 types of metrics: counters, gauges, histograms (and timers), histories, meter_readers and meters. Metrics can be created, read and updated via the `folsom_metrics` module.
