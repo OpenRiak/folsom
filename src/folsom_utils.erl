@@ -62,8 +62,6 @@ timestamp() ->
 get_ets_size(Tab) ->
     ets:info(Tab, size).
 
--ifdef(use_update_counter_4).
-
 %% ets:update_counter/4 was introduced in OTP 18. When < 18 is no
 %% longer supported all this code can be cleaned up along with
 %% folsom_metrics_spiral:new/2
@@ -72,59 +70,9 @@ update_counter(Tid, Key, Value) when is_integer(Value) ->
 update_counter_no_exceptions(Tid, Key, Value) ->
     update_counter(Tid, Key, Value).
 
--else.
-
-%% @doc
-%% Same as {@link ets:update_counter/3} but inserts `{Key, Value}' if object
-%% is missing in the table.
-update_counter(Tid, Key, Value) when is_integer(Value) ->
-    %% try to update the counter, will badarg if it doesn't exist
-    try ets:update_counter(Tid, Key, Value) of
-        Res ->
-            Res
-    catch
-        error:badarg ->
-            %% row didn't exist, create it
-            %% use insert_new to avoid races
-            case ets:insert_new(Tid, {Key, Value}) of
-                true ->
-                    Value;
-                false ->
-                    %% someone beat us to it
-                    ets:update_counter(Tid, Key, Value)
-            end
-    end.
-
-%% @doc
-%% Same as {@link ets:update_counter/3} but inserts `{Key, Value}' if object
-%% is missing in the table, avoiding exceptions by reading first.
-%% Won't be required after https://github.com/erlang/otp/pull/362
-update_counter_no_exceptions(Tid, Key, Value) when is_integer(Value) ->
-    %% Read counter first to avoid an exception
-    case ets:lookup(Tid, Key) of
-        [] ->
-            %% row didn't exist, create it
-            %% use insert_new to avoid races
-            case ets:insert_new(Tid, {Key, Value}) of
-                true ->
-                    Value;
-                false ->
-                    %% someone beat us to it
-                    ets:update_counter(Tid, Key, Value)
-            end;
-        _ ->
-            ets:update_counter(Tid, Key, Value)
-    end.
-
--endif.
-
-
--ifdef(use_rand).
 
 rand_uniform(N) ->
     rand:uniform(N).
-
--else.
 
 rand_uniform(N) ->
     %% ensure seed is initialized

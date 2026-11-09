@@ -23,12 +23,6 @@
 
 -module(folsom_sample_slide_uniform).
 
--ifdef(use_rand).
--define(RANDOM, rand).
--else.
--define(RANDOM, random).
--endif.
-
 -export([
          new/1,
          update/2,
