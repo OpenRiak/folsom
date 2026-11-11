@@ -394,8 +394,19 @@ vm_metrics() ->
 
     [{_, [{backtrace, _}| _]} | _] = folsom_vm_metrics:get_process_info(),
 
-    [{_, [{name, _}| _]} | _] = folsom_vm_metrics:get_port_info().
+    ok = a_very_brittle_test_of_ports().
 
+-if((?OTP_RELEASE) >= 28).
+a_very_brittle_test_of_ports() ->
+    %% otp-28 has a single "forker" in the list returned by erlang:ports().
+    [] = folsom_vm_metrics:get_port_info(),
+    ok.
+-else.
+a_very_brittle_test_of_ports() ->
+    %% otp-26 has two elements in the list, a "forker" and one named "2/2"
+    [{_, [{name, _}| _]} | _] = folsom_vm_metrics:get_port_info(),
+    ok.
+-endif.
 
 counter_metric(Count, Counter) ->
     ok = folsom_metrics:new_counter(Counter),

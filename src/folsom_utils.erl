@@ -73,16 +73,3 @@ update_counter_no_exceptions(Tid, Key, Value) ->
 
 rand_uniform(N) ->
     rand:uniform(N).
-
-rand_uniform(N) ->
-    %% ensure seed is initialized
-    %% simluating new `rand' module's behaviour
-    case get(random_seed) of
-        undefined ->
-            random:seed(os:timestamp());
-        {_, _, _} ->
-            ok
-    end,
-    random:uniform(N).
-
--endif.
